@@ -56,6 +56,23 @@ python neg_cleaner.py \
 - `--output-suffix` (opcional, padrão `_clean`): sufixo dos arquivos fastq
   limpos gerados.
 
+## Gerar executável (Windows)
+
+Para rodar em máquinas sem Python instalado, dá para gerar um `.exe`
+standalone com o [PyInstaller](https://pyinstaller.org/):
+
+```bash
+pip install -r requirements.txt pyinstaller
+pyinstaller --onefile --name neg_cleaner --console neg_cleaner.py
+```
+
+O executável fica em `dist/neg_cleaner.exe` e aceita os mesmos argumentos do
+script (`--demux-folder`, `--fastq-folder` etc.):
+
+```bash
+dist\neg_cleaner.exe --demux-folder "caminho\Demultiplexed" --fastq-folder "caminho\fastq_pass"
+```
+
 ## Histórico
 
 As três versões anteriores deste script (evoluídas entre setembro e

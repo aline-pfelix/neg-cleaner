@@ -25,6 +25,9 @@ SUBSEQ_END = 100
 MAX_EDIT_DISTANCE = 1
 
 
+# -------------------------------------------------------------------- #
+# CONFIGURAÇÕES E ARGUMENTOS                                           #
+# -------------------------------------------------------------------- #
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -51,6 +54,9 @@ def parse_args():
     return parser.parse_args()
 
 
+# -------------------------------------------------------------------- #
+# CARREGAMENTO E PREPARAÇÃO DOS DADOS                                  #
+# -------------------------------------------------------------------- #
 def load_plate_ids(demux_folder):
     """Carrega, por placa, os IDs de todas as leituras e dos negativos."""
     placas_data = {}
@@ -100,6 +106,9 @@ def save_dict(output_dict, placas_data):
             f.write(f"  Subsequências: {list(data['subseqs'])}\n\n")
 
 
+# -------------------------------------------------------------------- #
+# LIMPEZA DOS ARQUIVOS FASTQ                                           #
+# -------------------------------------------------------------------- #
 def clean_file(fastq, fastq_folder, output_suffix, placas_data):
     file_path = os.path.join(fastq_folder, fastq)
     file_prefix = fastq.replace(".fastq.gz", "")
@@ -126,6 +135,9 @@ def clean_file(fastq, fastq_folder, output_suffix, placas_data):
     print(f"[{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}] Arquivo processado: {fastq}")
 
 
+# -------------------------------------------------------------------- #
+# EXECUÇÃO DO PIPELINE                                                 #
+# -------------------------------------------------------------------- #
 def main():
     args = parse_args()
 
@@ -133,25 +145,32 @@ def main():
         args.fastq_folder, f"dic_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
     )
 
+    # ---- ETAPA 1: CARREGAR IDS POR PLACA ---- #
     print("Carregando IDs por placa...")
     placas_data, id_neg = load_plate_ids(args.demux_folder)
 
+    # ---- ETAPA 2: EXTRAIR ASSINATURAS DOS NEGATIVOS ---- #
     extract_negative_subseqs(args.fastq_folder, placas_data, id_neg)
 
+    # ---- ETAPA 3: SALVAR DICIONÁRIO ---- #
     save_dict(output_dict, placas_data)
     print(f"Dicionário salvo em {output_dict}")
 
+    # ---- ETAPA 4: LIMPAR ARQUIVOS FASTQ ---- #
     fastqs = [f for f in os.listdir(args.fastq_folder) if f.endswith(".fastq.gz")]
     with ProcessPoolExecutor() as executor:
         futures = [
             executor.submit(clean_file, fastq, args.fastq_folder, args.output_suffix, placas_data)
             for fastq in fastqs
         ]
-        for _ in tqdm(as_completed(futures), total=len(futures), desc="Progresso"):
-            pass
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Progresso"):
+            future.result()
 
     print("Todos os arquivos foram processados com sucesso.")
 
 
 if __name__ == "__main__":
+    from multiprocessing import freeze_support
+
+    freeze_support()
     main()

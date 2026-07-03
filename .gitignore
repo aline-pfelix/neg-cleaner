@@ -5,6 +5,11 @@ __pycache__/
 venv/
 env/
 
+# PyInstaller
+build/
+dist/
+*.spec
+
 # Dados e saídas locais (não devem ir para o repo)
 *.fastq.gz
 *.fasta
