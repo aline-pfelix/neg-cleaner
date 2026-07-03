@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Dados e saídas locais (não devem ir para o repo)
+*.fastq.gz
+*.fasta
+*.fa
+dic_*.txt
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
