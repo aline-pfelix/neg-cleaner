@@ -1,14 +1,7 @@
-#!/usr/bin/env python3
-"""
-Remove contaminação de controle negativo em leituras Nanopore (fastq).
-
-Para cada placa, identifica as leituras associadas aos poços de controle
-negativo (arquivos .fa cujo nome contém "Neg"), extrai uma subsequência de
-assinatura (posições 50-100) de cada leitura negativa e remove, dos demais
-arquivos fastq da mesma placa, qualquer leitura cuja sequência contenha essa
-assinatura com distância de edição <= 1 (indício de contaminação/index
-hopping a partir do controle negativo).
-"""
+# -------------------------------------------------------------------- #
+# Author: Aline Priscila Félix                                         #
+# Version: 2.3.0                                                       #
+# -------------------------------------------------------------------- #
 
 import argparse
 import gzip
